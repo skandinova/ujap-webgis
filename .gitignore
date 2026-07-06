@@ -220,3 +220,6 @@ __marimo__/
 # Environment variables
 .env
 backend/.env
+
+# VS Code settings
+.vscode/
