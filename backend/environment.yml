@@ -1,0 +1,9 @@
+name: ujap
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - fastapi
+  - geopandas
+  - uvicorn
+prefix: C:\miniforge3\envs\ujap
