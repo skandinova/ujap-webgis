@@ -223,3 +223,11 @@ backend/.env
 
 # VS Code settings
 .vscode/
+
+# Mergin project data (large, regenerated via /sync)
+ujap_data/
+backend/ujap_data/
+
+# Python bytecode cache
+__pycache__/
+*.pyc
