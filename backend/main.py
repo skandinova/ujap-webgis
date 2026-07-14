@@ -4,10 +4,18 @@ import geopandas as gpd
 from dotenv import load_dotenv
 from mergin import MerginClient
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # CHANGE BEFORE DEPLOYMENT
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_PATH = os.path.join(BASE_DIR, "ujap_data")
