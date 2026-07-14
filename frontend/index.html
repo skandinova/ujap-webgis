@@ -15,8 +15,14 @@
   <script>
     const map = L.map('map').setView([32.3252, 36.3678], 18);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
+    }).addTo(map);
+
+    L.tileLayer('http://127.0.0.1:8000/tiles/{z}/{x}/{y}.jpg', {
+      maxZoom: 21,
+      attribution: 'UJAP 2014 Orthophoto by Ivan LaBianca'
     }).addTo(map);
 
     fetch('http://127.0.0.1:8000/layers/contexts')

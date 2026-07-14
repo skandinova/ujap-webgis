@@ -1,10 +1,12 @@
 import os
 import pandas as pd
 import geopandas as gpd
+import sqlite3
 from dotenv import load_dotenv
 from mergin import MerginClient
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 
 load_dotenv()
 
@@ -20,6 +22,7 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_PATH = os.path.join(BASE_DIR, "ujap_data")
 GPKG_PATH = os.path.join(PROJECT_PATH, "ujap_data.gpkg")
+MBTILES_PATH = os.path.join(PROJECT_PATH, "base", "ortho_2014_labianca.mbtiles")
 
 def get_client():
     return MerginClient(
@@ -35,6 +38,22 @@ def clean_for_geojson(gdf):
         if pd.api.types.is_datetime64_any_dtype(gdf[col]):
             gdf[col] = gdf[col].astype(str)
     return gdf
+
+@app.get("/tiles/{z}/{x}/{y}.jpg")
+def get_tile(z: int, x: int, y: int):
+    tms_y = (2 ** z - 1) - y
+    conn = sqlite3.connect(MBTILES_PATH)
+    cursor = conn.execute(
+        "SELECT tile_data FROM tiles WHERE zoom_level=? AND tile_column=? AND tile_row=?",
+        (z, x, tms_y)
+    )
+    row = cursor.fetchone()
+    conn.close()
+
+    if row is None:
+        return Response(status_code=404)
+
+    return Response(content=row[0], media_type="image/jpeg")
 
 @app.get("/layers/{layer_name}")
 def get_layer(layer_name: str):
