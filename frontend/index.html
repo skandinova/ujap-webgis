@@ -36,8 +36,8 @@
         }).addTo(map);
       })
       .catch(err => console.error('Failed to load layer:', err));
-
-      fetch('http://127.0.0.1:8000/layers/buildings')
+    
+    fetch('http://127.0.0.1:8000/layers/buildings')
       .then(res => res.json())
       .then(data => {
         L.geoJSON(data, {
@@ -47,7 +47,19 @@
           }
         }).addTo(map);
       })
-      .catch(err => console.error('Failed to load layer:', err));
+      .catch(err => console.error('Failed to load layer:', err));  
+
+    fetch('http://127.0.0.1:8000/layers/trenches')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            layer.bindPopup(`<b>${p.name}</b><br>${p.description ?? ''}`);
+          }
+        }).addTo(map);
+      })
+      .catch(err => console.error('Failed to load layer:', err));   
 
     fetch('http://127.0.0.1:8000/layers/contexts')
       .then(res => res.json())
