@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import geopandas as gpd
+import math
 import sqlite3
 from dotenv import load_dotenv
 from mergin import MerginClient
@@ -39,6 +40,13 @@ def clean_for_geojson(gdf):
             gdf[col] = gdf[col].astype(str)
     return gdf
 
+def sanitize_records(records):
+    for record in records:
+        for key, value in record.items():
+            if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+                record[key] = None
+    return records
+
 @app.get("/tiles/{z}/{x}/{y}.jpg")
 def get_tile(z: int, x: int, y: int):
     tms_y = (2 ** z - 1) - y
@@ -65,7 +73,9 @@ def get_layer(layer_name: str):
 @app.get("/tables/{table_name}")
 def get_table(table_name: str):
     gdf = gpd.read_file(GPKG_PATH, layer=table_name, read_geometry=False)
-    return gdf.to_dict(orient="records")
+    records = gdf.to_dict(orient="records")
+    records = sanitize_records(records)
+    return records
 
 @app.get("/sync")
 def sync_project():

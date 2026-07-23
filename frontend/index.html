@@ -16,28 +16,42 @@
     const map = L.map('map').setView([32.3252, 36.3678], 18);
 
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 19,
+      maxZoom: 24,
+      maxNativeZoom: 18,
       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics'
     }).addTo(map);
 
     L.tileLayer('http://127.0.0.1:8000/tiles/{z}/{x}/{y}.jpg', {
-      maxZoom: 21,
+      maxZoom: 24,
+      maxNativeZoom: 21,
       attribution: 'UJAP 2014 Orthophoto by Ivan LaBianca'
     }).addTo(map);
 
     Promise.all([
-      fetch('http://127.0.0.1:8000/layers/areas'),
-      fetch('http://127.0.0.1:8000/layers/buildings'),
-      fetch('http://127.0.0.1:8000/layers/trenches'),
-      fetch('http://127.0.0.1:8000/layers/contexts')
-    ]).then(([areasData, buildingsData, trenchesData, contextsData]) => {
+      fetch('http://127.0.0.1:8000/layers/areas').then(r => r.json()),
+      fetch('http://127.0.0.1:8000/layers/buildings').then(r => r.json()),
+      fetch('http://127.0.0.1:8000/layers/trenches').then(r => r.json()),
+      fetch('http://127.0.0.1:8000/layers/contexts').then(r => r.json()),
+      fetch('http://127.0.0.1:8000/tables/vocab_terms').then(r => r.json())
+    ]).then(([areasData, buildingsData, trenchesData, contextsData, vocabTermsData]) => {
+      
+      function buildLookup(rows, idField, labelField) {
+        const lookup = {};
+        rows.forEach(row => {
+          lookup[row[idField]] = row[labelField];
+        });
+        return lookup;
+      }
+
+      const vocabTermsLookup = buildLookup(vocabTermsData, 'id', 'label');
+
       const areasLayer = L.geoJSON(areasData, {
         style: { color: 'blue', weight: 2, fillOpacity: 0.1 },
         onEachFeature: (feature, layer) => {
           const p = feature.properties;
           layer.bindPopup(`<b>${p.v_displayname}</b><br>${p.description ?? ''}`);
         }
-      }).addTo(map);
+      });
 
       const buildingsLayer = L.geoJSON(buildingsData, {
         style: { color: 'green', weight: 2, fillOpacity: 0.1 },
