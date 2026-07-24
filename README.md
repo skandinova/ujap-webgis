@@ -1,2 +1,2 @@
 # ujap-webgis
-WebGIS application for Umm el-Jimal project.
+WebGIS application for Umm Al-Jimal project.
