@@ -47,21 +47,18 @@ fetch('http://127.0.0.1:8000/sync')
       }
     }
 
-    const vocabTermsLookup = buildLookup(vocabTermsData, 'id', 'label');
-
     const contextFieldGroups = {
       common: [
-        { key: 'site_id', label: 'Site' },
-        { key: 'trench_id', label: 'Trench' },
+        { key: 'trench_id', label: 'Trench', type: 'trench' },
         { key: 'geom_confidence_id', label: 'Spatial Confidence' },
-        { key: 'justification', label: 'New Context Justification' },
-        { key: 'recording_condition_id', label: 'Recording Condition(s)' }
+        { key: 'justification', label: 'New Context Justification', type: 'raw' },
+        { key: 'recording_condition_id', label: 'Recording Condition(s)', multi: true }
       ],
       925: [
-        { key: 'excavation_method_id', label: 'Excavation Method(s)' },
-        { key: 'excavation_tool_id', label: 'Excavation Tool(s)' },
-        { key: 'was_sifted', label: 'Sifted?' },
-        { key: 'sifted_percentage', label: 'Percentage Sifted' },
+        { key: 'excavation_method_id', label: 'Excavation Method(s)', type: 'vocab-code', multi: true },
+        { key: 'excavation_tool_id', label: 'Excavation Tool(s)', multi: true },
+        { key: 'was_sifted', label: 'Sifted?', type: 'raw' },
+        { key: 'sifted_percentage', label: 'Percentage Sifted', type: 'raw' },
         { key: 'deposit_color_id', label: 'Color' },
         { key: 'deposit_color_confidence_id', label: 'Color Confidence' },
         { key: 'deposit_composition_id', label: 'Composition' },
@@ -82,57 +79,58 @@ fetch('http://127.0.0.1:8000/sync')
         { key: 'cut_slope_break_bottom_id', label: 'Slope Break (Bottom)' },
         { key: 'cut_slope_break_confidence_id', label: 'Slope Break Confidence' },
         { key: 'cut_measure_unit_id', label: 'Measurement Unit' },
-        { key: 'cut_measure_method_id', label: 'Measurement Method' },
-        { key: 'cut_measure_instrument_id', label: 'Measurement Instrument' },
-        { key: 'cut_measure_length_value', label: 'Length' },
-        { key: 'cut_measure_width_value', label: 'Width' },
-        { key: 'cut_measure_depth_value', label: 'Depth' },
+        { key: 'cut_measure_method_id', label: 'Measurement Method', multi: true },
+        { key: 'cut_measure_instrument_id', label: 'Measurement Instrument', multi: true },
+        { key: 'cut_measure_length_value', label: 'Length', type: 'raw' },
+        { key: 'cut_measure_width_value', label: 'Width', type: 'raw' },
+        { key: 'cut_measure_depth_value', label: 'Depth', type: 'raw' },
         { key: 'cut_measure_confidence_id', label: 'Measurement Confidence' }
       ],
       927: [
-        { key: 'architectural_was_excavated_or_removed', label: 'Excavated / Removed?' },
+        { key: 'architectural_was_excavated_or_removed', label: 'Excavated / Removed?', type: 'raw' },
         { key: 'architectural_type_id', label: 'Architectural Feature Type' },
         { key: 'architectural_type_confidence_id', label: 'Type Confidence' },
-        { key: 'architectural_part_of_building', label: 'Part of Building?' },
-        { key: 'architectural_building_id', label: 'Building' },
+        { key: 'architectural_part_of_building', label: 'Part of Building?', type: 'raw' },
+        { key: 'architectural_building_id', label: 'Building', type: 'building' },
         { key: 'architectural_part_of_building_confidence_id', label: 'Part of Building Confidence' },
         { key: 'architectural_measure_unit_id', label: 'Measurement Unit' },
-        { key: 'architectural_measure_method_id', label: 'Measurement Method' },
-        { key: 'architectural_measure_instrument_id', label: 'Measurement Instrument' },
-        { key: 'architectural_measure_length_value', label: 'Length' },
-        { key: 'architectural_measure_width_value', label: 'Width' },
-        { key: 'architectural_measure_height_value', label: 'Height' },
+        { key: 'architectural_measure_method_id', label: 'Measurement Method', multi: true },
+        { key: 'architectural_measure_instrument_id', label: 'Measurement Instrument', multi: true },
+        { key: 'architectural_measure_length_value', label: 'Length', type: 'raw' },
+        { key: 'architectural_measure_width_value', label: 'Width', type: 'raw' },
+        { key: 'architectural_measure_height_value', label: 'Height', type: 'raw' },
         { key: 'architectural_measure_confidence_id', label: 'Measurement Confidence' },
-        { key: 'architectural_courses_count', label: 'Courses Count' },
+        { key: 'architectural_courses_count', label: 'Courses Count', type: 'raw' },
         { key: 'architectural_interior_exterior_id', label: 'Interior / Exterior' },
         { key: 'architectural_facing_direction_id', label: 'Facing Direction' },
-        { key: 'architectural_stone_finish_id', label: 'Stone Finish' },
-        { key: 'architectural_masonry_style_id', label: 'Masonry Style' },
-        { key: 'architectural_masonry_technique_id', label: 'Masonry Technique' },
-        { key: 'architectural_special_features_id', label: 'Special Features' },
-        { key: 'architectural_bonding_material_id', label: 'Bonding Material' },
-        { key: 'architectural_bonding_material_sampled', label: 'Bonding Material Sampled?' },
-        { key: 'architectural_sample_ID', label: 'Bonding Material Sample ID' }
+        { key: 'architectural_stone_finish_id', label: 'Stone Finish', multi: true },
+        { key: 'architectural_masonry_style_id', label: 'Masonry Style', multi: true },
+        { key: 'architectural_masonry_technique_id', label: 'Masonry Technique', multi: true },
+        { key: 'architectural_special_features_id', label: 'Special Features', multi: true },
+        { key: 'architectural_bonding_material_id', label: 'Bonding Material', multi: true },
+        { key: 'architectural_building_material_id', label: 'Building Material', multi: true },
+        { key: 'architectural_bonding_material_sampled', label: 'Bonding Material Sampled?', type: 'raw' },
+        { key: 'architectural_sample_ID', label: 'Bonding Material Sample', type: 'sample' }
       ]
     };
 
     const interpretationFields = [
       { key: 'initial_formation_process_id', label: 'Initial Formation Process' },
-      { key: 'initial_formation_period_id', label: 'Initial Formation Period(s)' },
+      { key: 'initial_formation_period_id', label: 'Initial Formation Period(s)', multi: true },
       { key: 'initial_formation_confidence_id', label: 'Initial Formation Confidence' },
-      { key: 'modification_process_id', label: 'Later Modification Process(es)' },
-      { key: 'modification_period_id', label: 'Modification Period(s)' },
+      { key: 'modification_process_id', label: 'Later Modification Process(es)', multi: true },
+      { key: 'modification_period_id', label: 'Modification Period(s)', multi: true },
       { key: 'modification_confidence_id', label: 'Modification Confidence' },
       { key: 'destruction_process_id', label: 'Destruction Process' },
-      { key: 'destruction_period_id', label: 'Destruction Period(s)' },
+      { key: 'destruction_period_id', label: 'Destruction Period(s)', multi: true },
       { key: 'destruction_confidence_id', label: 'Destruction Confidence' }
     ];
 
     const metadataFields = [
-      { key: 'created_at', label: 'Created At' },
-      { key: 'created_by', label: 'Created By' },
-      { key: 'updated_at', label: 'Updated At' },
-      { key: 'updated_by', label: 'Updated By' }
+      { key: 'created_at', label: 'Created At', type: 'raw' },
+      { key: 'created_by', label: 'Created By', type: 'raw' },
+      { key: 'updated_at', label: 'Updated At', type: 'raw' },
+      { key: 'updated_by', label: 'Updated By', type: 'raw' }
     ];
 
     const relatedTableColumns = {
@@ -161,12 +159,49 @@ fetch('http://127.0.0.1:8000/sync')
       ]
     };
 
+    const vocabTermsLookup = buildLookup(vocabTermsData, 'id', 'label');
+    const vocabCodeLookup = buildLookup(vocabTermsData, 'id', 'code');
+    const trenchLookup = buildLookup(trenchesData.features.map(f => f.properties), 'id', 'trench_code');
+    const buildingLookup = buildLookup(buildingsData.features.map(f => f.properties), 'id', 'building_code');
+
     function resolveValue(value) {
       if (value === null || value === undefined || value === '') return '—';
       return vocabTermsLookup[value] ?? value;
     }
 
-    function renderFieldTable(feature, typeId) {
+    function parsePgArray(value) {
+      if (typeof value !== 'string') return null;
+      const trimmed = value.trim();
+      if (!(trimmed.startsWith('{') && trimmed.endsWith('}'))) return null;
+      const inner = trimmed.slice(1, -1).trim();
+      return inner === '' ? [] : inner.split(',').map(s => s.trim());
+    }
+
+    function resolveSingle(fieldConfig, value, dynamicLookups) {
+      switch (fieldConfig.type) {
+        case 'raw': return value;
+        case 'vocab-code': return vocabCodeLookup[value] ?? value;
+        case 'trench': return trenchLookup[value] ?? value;
+        case 'building': return buildingLookup[value] ?? value;
+        case 'sample': return (dynamicLookups.sample && dynamicLookups.sample[value]) ?? value;
+        default: return vocabTermsLookup[value] ?? value;
+      }
+    }
+
+    function resolveField(fieldConfig, rawValue, dynamicLookups) {
+      if (rawValue === null || rawValue === undefined || rawValue === '') return '—';
+
+      if (fieldConfig.multi) {
+        const ids = parsePgArray(rawValue);
+        if (ids !== null) {
+          return ids.length === 0 ? '—' : ids.map(id => resolveSingle(fieldConfig, id, dynamicLookups)).join(', ');
+        }
+      }
+
+      return resolveSingle(fieldConfig, rawValue, dynamicLookups);
+    }
+
+    function renderFieldTable(feature, typeId, dynamicLookups) {
       const p = feature.properties;
       const fields = [
         ...contextFieldGroups.common,
@@ -174,7 +209,7 @@ fetch('http://127.0.0.1:8000/sync')
         ...interpretationFields,
         ...metadataFields
       ];
-      let rows = fields.map(f => `<tr><td>${f.label}</td><td>${resolveValue(p[f.key])}</td></tr>`).join('');
+      let rows = fields.map(f => `<tr><td>${f.label}</td><td>${resolveField(f, p[f.key], dynamicLookups)}</td></tr>`).join('');
       return `<table class="detail-table"><tbody>${rows}</tbody></table>`;
     }
 
@@ -216,10 +251,12 @@ fetch('http://127.0.0.1:8000/sync')
       const pailLookup = {};
       pails.forEach(p => { pailLookup[p.id] = p.pail_code; });
 
+      const sampleLookup = buildLookup(samples, 'id', 'sample_code');
+
       content.innerHTML = `
         <h3>${p.context_code}</h3>
         <p>${p.name}</p>
-        ${renderFieldTable(feature, typeId)}
+        ${renderFieldTable(feature, typeId, { sample: sampleLookup })}
 
         <div class="detail-section-title">Pails</div>
         ${renderRelatedTable(pails, relatedTableColumns.pails, pailLookup)}
@@ -241,7 +278,7 @@ fetch('http://127.0.0.1:8000/sync')
       style: areasStyle,
       onEachFeature: (feature, layer) => {
         const p = feature.properties;
-        layer.bindPopup(`<b>Area: ${p.area_code}</b><br>${p.description ?? ''}`); // Definition for Areas popup
+        layer.bindPopup(`<b>Area: ${p.area_code}</b><br>${p.description ?? ''}`);
       }
     });
 
@@ -252,7 +289,7 @@ fetch('http://127.0.0.1:8000/sync')
       onEachFeature: (feature, layer) => {
         const p = feature.properties;
         const bTypeLabel = vocabTermsLookup[p.building_type_id] ?? `${p.building_type_id}`;
-        layer.bindPopup(`<b>${p.name}</b><br>${bTypeLabel}<br>${p.description ?? ''}`); // Definition for Buildings popup
+        layer.bindPopup(`<b>${p.name}</b><br>${bTypeLabel}<br>${p.description ?? ''}`);
       }
     }).addTo(map);
 
@@ -262,7 +299,7 @@ fetch('http://127.0.0.1:8000/sync')
       style: trenchesStyle,
       onEachFeature: (feature, layer) => {
         const p = feature.properties;
-        layer.bindPopup(`<b>${p.name}</b><br>${p.description ?? ''}`); // Definition for Trenches popup
+        layer.bindPopup(`<b>${p.name}</b><br>${p.description ?? ''}`);
       }
     }).addTo(map);
 
@@ -280,7 +317,7 @@ fetch('http://127.0.0.1:8000/sync')
         const p = feature.properties;
         const cTypeLabel = vocabTermsLookup[p.context_type_id] ?? `${p.context_type_id}`;
 
-        let popupContent = `<b>${p.context_code}</b><br>${cTypeLabel}<br>${p.name}<br>${p.description ?? ''}`; // Initial definition for Contexts popup
+        let popupContent = `<b>${p.context_code}</b><br>${cTypeLabel}<br>${p.name}<br>${p.description ?? ''}`;
 
         const earliest = p.initial_formation_earliest_date;
         const latest = p.initial_formation_latest_date;
@@ -288,10 +325,10 @@ fetch('http://127.0.0.1:8000/sync')
         if (earliest && latest) {
           const earliestDisplay = formatEDTF(earliest);
           const latestDisplay = formatEDTF(latest);
-          popupContent += `<br><b>Date range:</b> ${earliestDisplay} - ${latestDisplay}`; // Addition to Contexts popup if date range is available
+          popupContent += `<br><b>Date range:</b> ${earliestDisplay} - ${latestDisplay}`;
 
           if (p.interpretation_dating_notes) {
-            popupContent += `<br><b>Dating notes:</b> ${p.interpretation_dating_notes}`; // Addition to Contexts popup if date range and interp/dating notes are available
+            popupContent += `<br><b>Dating notes:</b> ${p.interpretation_dating_notes}`;
           }
         }
 
