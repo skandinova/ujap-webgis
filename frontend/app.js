@@ -178,12 +178,21 @@ fetch('http://127.0.0.1:8000/sync')
       return `<table class="detail-table"><tbody>${rows}</tbody></table>`;
     }
 
-    function renderRelatedTable(records, columns) {
+    function renderRelatedTable(records, columns, pailLookup) {
       if (!records || records.length === 0) return '<p><i>None recorded</i></p>';
       const header = columns.map(c => `<th>${c.label}</th>`).join('');
-      const rows = records.map(r =>
-        `<tr>${columns.map(c => `<td>${resolveValue(r[c.key])}</td>`).join('')}</tr>`
-      ).join('');
+      const rows = records.map(r => {
+        const cells = columns.map(c => {
+          let value;
+          if (c.key === 'pail_id') {
+            value = pailLookup[r[c.key]] ?? r[c.key] ?? '—';
+          } else {
+            value = resolveValue(r[c.key]);
+          }
+          return `<td>${value}</td>`;
+        }).join('');
+        return `<tr>${cells}</tr>`;
+      }).join('');
       return `<table class="detail-table"><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
     }
 
@@ -204,22 +213,25 @@ fetch('http://127.0.0.1:8000/sync')
         fetch(`http://127.0.0.1:8000/tables/ecofacts?context_id=${contextId}`).then(r => r.json())
       ]);
 
+      const pailLookup = {};
+      pails.forEach(p => { pailLookup[p.id] = p.pail_code; });
+
       content.innerHTML = `
         <h3>${p.context_code}</h3>
         <p>${p.name}</p>
         ${renderFieldTable(feature, typeId)}
 
         <div class="detail-section-title">Pails</div>
-        ${renderRelatedTable(pails, relatedTableColumns.pails)}
+        ${renderRelatedTable(pails, relatedTableColumns.pails, pailLookup)}
 
         <div class="detail-section-title">Samples</div>
-        ${renderRelatedTable(samples, relatedTableColumns.samples)}
+        ${renderRelatedTable(samples, relatedTableColumns.samples, pailLookup)}
 
         <div class="detail-section-title">Artifacts</div>
-        ${renderRelatedTable(artifacts, relatedTableColumns.artifacts)}
+        ${renderRelatedTable(artifacts, relatedTableColumns.artifacts, pailLookup)}
 
         <div class="detail-section-title">Ecofacts</div>
-        ${renderRelatedTable(ecofacts, relatedTableColumns.ecofacts)}
+        ${renderRelatedTable(ecofacts, relatedTableColumns.ecofacts, pailLookup)}
       `;
     }
 
