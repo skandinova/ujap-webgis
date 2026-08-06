@@ -49,6 +49,180 @@ fetch('http://127.0.0.1:8000/sync')
 
     const vocabTermsLookup = buildLookup(vocabTermsData, 'id', 'label');
 
+    const contextFieldGroups = {
+      common: [
+        { key: 'site_id', label: 'Site' },
+        { key: 'trench_id', label: 'Trench' },
+        { key: 'geom_confidence_id', label: 'Spatial Confidence' },
+        { key: 'justification', label: 'New Context Justification' },
+        { key: 'recording_condition_id', label: 'Recording Condition(s)' }
+      ],
+      925: [
+        { key: 'excavation_method_id', label: 'Excavation Method(s)' },
+        { key: 'excavation_tool_id', label: 'Excavation Tool(s)' },
+        { key: 'was_sifted', label: 'Sifted?' },
+        { key: 'sifted_percentage', label: 'Percentage Sifted' },
+        { key: 'deposit_color_id', label: 'Color' },
+        { key: 'deposit_color_confidence_id', label: 'Color Confidence' },
+        { key: 'deposit_composition_id', label: 'Composition' },
+        { key: 'deposit_composition_confidence_id', label: 'Composition Confidence' },
+        { key: 'deposit_slope_direction_id', label: 'Slope Direction' },
+        { key: 'deposit_slope_degree_id', label: 'Slope Degree' },
+        { key: 'deposit_slope_confidence_id', label: 'Slope Confidence' },
+        { key: 'deposit_compaction_id', label: 'Compaction' },
+        { key: 'deposit_compaction_confidence_id', label: 'Compaction Confidence' }
+      ],
+      926: [
+        { key: 'cut_shape_plan_id', label: 'Shape (Plan)' },
+        { key: 'cut_linear_orientation_id', label: 'Linear Orientation' },
+        { key: 'cut_shape_sides_id', label: 'Shape (Sides)' },
+        { key: 'cut_shape_base_id', label: 'Shape (Base)' },
+        { key: 'cut_shape_confidence_id', label: 'Shape Confidence' },
+        { key: 'cut_slope_break_top_id', label: 'Slope Break (Top)' },
+        { key: 'cut_slope_break_bottom_id', label: 'Slope Break (Bottom)' },
+        { key: 'cut_slope_break_confidence_id', label: 'Slope Break Confidence' },
+        { key: 'cut_measure_unit_id', label: 'Measurement Unit' },
+        { key: 'cut_measure_method_id', label: 'Measurement Method' },
+        { key: 'cut_measure_instrument_id', label: 'Measurement Instrument' },
+        { key: 'cut_measure_length_value', label: 'Length' },
+        { key: 'cut_measure_width_value', label: 'Width' },
+        { key: 'cut_measure_depth_value', label: 'Depth' },
+        { key: 'cut_measure_confidence_id', label: 'Measurement Confidence' }
+      ],
+      927: [
+        { key: 'architectural_was_excavated_or_removed', label: 'Excavated / Removed?' },
+        { key: 'architectural_type_id', label: 'Architectural Feature Type' },
+        { key: 'architectural_type_confidence_id', label: 'Type Confidence' },
+        { key: 'architectural_part_of_building', label: 'Part of Building?' },
+        { key: 'architectural_building_id', label: 'Building' },
+        { key: 'architectural_part_of_building_confidence_id', label: 'Part of Building Confidence' },
+        { key: 'architectural_measure_unit_id', label: 'Measurement Unit' },
+        { key: 'architectural_measure_method_id', label: 'Measurement Method' },
+        { key: 'architectural_measure_instrument_id', label: 'Measurement Instrument' },
+        { key: 'architectural_measure_length_value', label: 'Length' },
+        { key: 'architectural_measure_width_value', label: 'Width' },
+        { key: 'architectural_measure_height_value', label: 'Height' },
+        { key: 'architectural_measure_confidence_id', label: 'Measurement Confidence' },
+        { key: 'architectural_courses_count', label: 'Courses Count' },
+        { key: 'architectural_interior_exterior_id', label: 'Interior / Exterior' },
+        { key: 'architectural_facing_direction_id', label: 'Facing Direction' },
+        { key: 'architectural_stone_finish_id', label: 'Stone Finish' },
+        { key: 'architectural_masonry_style_id', label: 'Masonry Style' },
+        { key: 'architectural_masonry_technique_id', label: 'Masonry Technique' },
+        { key: 'architectural_special_features_id', label: 'Special Features' },
+        { key: 'architectural_bonding_material_id', label: 'Bonding Material' },
+        { key: 'architectural_bonding_material_sampled', label: 'Bonding Material Sampled?' },
+        { key: 'architectural_sample_ID', label: 'Bonding Material Sample ID' }
+      ]
+    };
+
+    const interpretationFields = [
+      { key: 'initial_formation_process_id', label: 'Initial Formation Process' },
+      { key: 'initial_formation_period_id', label: 'Initial Formation Period(s)' },
+      { key: 'initial_formation_confidence_id', label: 'Initial Formation Confidence' },
+      { key: 'modification_process_id', label: 'Later Modification Process(es)' },
+      { key: 'modification_period_id', label: 'Modification Period(s)' },
+      { key: 'modification_confidence_id', label: 'Modification Confidence' },
+      { key: 'destruction_process_id', label: 'Destruction Process' },
+      { key: 'destruction_period_id', label: 'Destruction Period(s)' },
+      { key: 'destruction_confidence_id', label: 'Destruction Confidence' }
+    ];
+
+    const metadataFields = [
+      { key: 'created_at', label: 'Created At' },
+      { key: 'created_by', label: 'Created By' },
+      { key: 'updated_at', label: 'Updated At' },
+      { key: 'updated_by', label: 'Updated By' }
+    ];
+
+    const relatedTableColumns = {
+      pails: [
+        { key: 'pail_code', label: 'Code' },
+        { key: 'description', label: 'Description' }
+      ],
+      samples: [
+        { key: 'sample_code', label: 'Code' },
+        { key: 'sample_type_id', label: 'Type' },
+        { key: 'pail_id', label: 'Pail' },
+        { key: 'description', label: 'Description' }
+      ],
+      artifacts: [
+        { key: 'artifact_code', label: 'Code' },
+        { key: 'artifact_type_id', label: 'Type' },
+        { key: 'pail_id', label: 'Pail' },
+        { key: 'description', label: 'Description' }
+      ],
+      ecofacts: [
+        { key: 'ecofact_code', label: 'Code' },
+        { key: 'ecofact_type_id', label: 'Type' },
+        { key: 'taxon_id', label: 'Taxon' },
+        { key: 'pail_id', label: 'Pail' },
+        { key: 'description', label: 'Description' }
+      ]
+    };
+
+    function resolveValue(value) {
+      if (value === null || value === undefined || value === '') return '—';
+      return vocabTermsLookup[value] ?? value;
+    }
+
+    function renderFieldTable(feature, typeId) {
+      const p = feature.properties;
+      const fields = [
+        ...contextFieldGroups.common,
+        ...(contextFieldGroups[typeId] || []),
+        ...interpretationFields,
+        ...metadataFields
+      ];
+      let rows = fields.map(f => `<tr><td>${f.label}</td><td>${resolveValue(p[f.key])}</td></tr>`).join('');
+      return `<table class="detail-table"><tbody>${rows}</tbody></table>`;
+    }
+
+    function renderRelatedTable(records, columns) {
+      if (!records || records.length === 0) return '<p><i>None recorded</i></p>';
+      const header = columns.map(c => `<th>${c.label}</th>`).join('');
+      const rows = records.map(r =>
+        `<tr>${columns.map(c => `<td>${resolveValue(r[c.key])}</td>`).join('')}</tr>`
+      ).join('');
+      return `<table class="detail-table"><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    async function openContextDetails(feature) {
+      const p = feature.properties;
+      const contextId = p.id;
+      const typeId = p.context_type_id;
+
+      const panel = document.getElementById('detail-panel');
+      const content = document.getElementById('detail-content');
+      content.innerHTML = '<p>Loading details...</p>';
+      panel.classList.add('open');
+
+      const [pails, samples, artifacts, ecofacts] = await Promise.all([
+        fetch(`http://127.0.0.1:8000/tables/pails?context_id=${contextId}`).then(r => r.json()),
+        fetch(`http://127.0.0.1:8000/tables/samples?context_id=${contextId}`).then(r => r.json()),
+        fetch(`http://127.0.0.1:8000/tables/artifacts?context_id=${contextId}`).then(r => r.json()),
+        fetch(`http://127.0.0.1:8000/tables/ecofacts?context_id=${contextId}`).then(r => r.json())
+      ]);
+
+      content.innerHTML = `
+        <h3>${p.context_code}</h3>
+        <p>${p.name}</p>
+        ${renderFieldTable(feature, typeId)}
+
+        <div class="detail-section-title">Pails</div>
+        ${renderRelatedTable(pails, relatedTableColumns.pails)}
+
+        <div class="detail-section-title">Samples</div>
+        ${renderRelatedTable(samples, relatedTableColumns.samples)}
+
+        <div class="detail-section-title">Artifacts</div>
+        ${renderRelatedTable(artifacts, relatedTableColumns.artifacts)}
+
+        <div class="detail-section-title">Ecofacts</div>
+        ${renderRelatedTable(ecofacts, relatedTableColumns.ecofacts)}
+      `;
+    }
+
     const areasStyle = { color: 'violet', weight: 3, fillOpacity: 0.1 };
 
     const areasLayer = L.geoJSON(areasData, {
@@ -109,7 +283,17 @@ fetch('http://127.0.0.1:8000/sync')
           }
         }
 
-        layer.bindPopup(popupContent);
+        layer.bindPopup(popupContent + `<br><a href="#" class="view-details-link">View Details</a>`);
+
+        layer.on('popupopen', () => {
+          const link = document.querySelector('.leaflet-popup .view-details-link');
+          if (link) {
+            link.addEventListener('click', (e) => {
+              e.preventDefault();
+              openContextDetails(feature);
+            });
+          }
+        });
 
         layer.bindTooltip(p.context_code, {
           permanent: true,
@@ -171,8 +355,12 @@ fetch('http://127.0.0.1:8000/sync')
       return div;
     };
     legend.addTo(map);
+
+    document.getElementById('detail-close').addEventListener('click', () => {
+      document.getElementById('detail-panel').classList.remove('open');
+    });
   })
   .catch(err => {
-    document.getElementById('loading').textContent = 'Failed to sync — showing may be outdated.';
+    document.getElementById('loading').textContent = 'Failed to sync - showing may be outdated.';
     console.error('Failed to load layers:', err);
   });

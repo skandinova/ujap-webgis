@@ -8,6 +8,7 @@ from mergin import MerginClient
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
+from typing import Optional
 
 load_dotenv()
 
@@ -71,8 +72,10 @@ def get_layer(layer_name: str):
     return gdf.__geo_interface__
 
 @app.get("/tables/{table_name}")
-def get_table(table_name: str):
+def get_table(table_name: str, context_id: Optional[str] = None):
     gdf = gpd.read_file(GPKG_PATH, layer=table_name, read_geometry=False)
+    if context_id and "context_id" in gdf.columns:
+        gdf = gdf[gdf["context_id"] == context_id]
     records = gdf.to_dict(orient="records")
     records = sanitize_records(records)
     return records
@@ -80,5 +83,26 @@ def get_table(table_name: str):
 @app.get("/sync")
 def sync_project():
     client = get_client()
-    client.pull_project(PROJECT_PATH) if os.path.exists(PROJECT_PATH) else client.download_project("mergin/ujap_field_data", PROJECT_PATH)
-    return {"status": "synced"}
+    try:
+        if os.path.exists(PROJECT_PATH):
+            before_info = client.project_info("mergin/ujap_field_data")
+            before_version = before_info["version"]
+
+            client.pull_project(PROJECT_PATH)
+
+            after_info = client.project_info("mergin/ujap_field_data")
+            after_version = after_info["version"]
+
+            return {
+                "status": "synced",
+                "action": "pull",
+                "version_before": before_version,
+                "version_after": after_version,
+                "changed": before_version != after_version
+            }
+        else:
+            client.download_project("mergin/ujap_field_data", PROJECT_PATH)
+            info = client.project_info("mergin/ujap_field_data")
+            return {"status": "synced", "action": "download", "version": info["version"]}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
