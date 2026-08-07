@@ -2,6 +2,8 @@
 
 A web-based viewer for field data from the Umm Al-Jimal Archaeological Project (UJAP).
 
+
+
 ## Background
 
 Umm Al-Jimal is an archaeological site in northern Jordan, with occupation layers spanning the Nabataean, Roman, Byzantine, and early Islamic periods. UJAP is an ongoing excavation and research project at the site, and this repo is the web mapping piece of that project.
