@@ -1,8 +1,8 @@
+<img width="800" height="465" alt="AppUse (1)" src="https://github.com/user-attachments/assets/791f1c2a-c728-442f-85bc-c15517349bf8" />
+
 # UJAP WebGIS
 
 A web-based viewer for field data from the Umm Al-Jimal Archaeological Project (UJAP).
-
-
 
 ## Background
 
